@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 112" role="img" aria-labelledby="title desc">
+  <title id="title">Lectora</title>
+  <desc id="desc">Libro abierto con ondas de audio y el nombre Lectora</desc>
+  <g transform="translate(8 8)">
+    <path d="M48 15C35 10 24 12 15 19v54c10-6 21-7 33-2 4 2 7 4 10 7V22c-3-3-6-5-10-7Z" fill="#E8897D"/>
+    <path d="M58 22v56c3-3 6-5 10-7 12-5 23-4 33 2V19c-9-7-20-9-33-4-4 2-7 4-10 7Z" fill="#D66F65"/>
+    <path d="M58 23v53" fill="none" stroke="#FFFDF9" stroke-linecap="round" stroke-width="4"/>
+    <path d="M35 38c5-3 10-3 15-1M35 49c5-3 10-3 15-1M71 37c5-2 10-2 15 1M71 48c5-2 10-2 15 1" fill="none" stroke="#FFFDF9" stroke-linecap="round" stroke-width="3" opacity=".9"/>
+    <path d="M58 84c-4-5-9-8-15-10-12-4-23-3-33 3M58 84c4-5 9-8 15-10 12-4 23-3 33 3" fill="none" stroke="#3C3230" stroke-linecap="round" stroke-width="4"/>
+    <path d="M113 35c8 5 8 21 0 26M121 28c14 9 14 31 0 40" fill="none" stroke="#E8897D" stroke-linecap="round" stroke-width="4"/>
+  </g>
+  <text x="154" y="72" fill="#3C3230" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="700" letter-spacing="-1.8">Lectora</text>
+</svg>

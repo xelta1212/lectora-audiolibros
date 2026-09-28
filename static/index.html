@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,6 +8,7 @@
   <link rel="icon" type="image/png" href="/static/favicon-logo.png?v=3" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
+
 <body>
   <div class="ambient ambient-one"></div>
   <div class="ambient ambient-two"></div>
@@ -46,7 +48,7 @@
             <input id="fileInput" type="file" accept=".pdf,.txt" hidden />
             <div class="upload-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24">
-                <path d="M12 16V4m0 0L7.8 8.2M12 4l4.2 4.2M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"/>
+                <path d="M12 16V4m0 0L7.8 8.2M12 4l4.2 4.2M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3" />
               </svg>
             </div>
             <strong>Arrastra tu archivo aquí</strong>
@@ -74,7 +76,9 @@
 
           <button id="extractButton" class="primary-button" type="button" disabled>
             <span>Extraer texto</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M14 7l5 5-5 5" />
+            </svg>
           </button>
         </article>
 
@@ -121,7 +125,9 @@
               </optgroup>
             </select>
             <button id="previewVoiceButton" class="preview-button" type="button">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
               Escuchar vista previa
             </button>
             <audio id="previewAudio" class="preview-audio" controls preload="none"></audio>
@@ -138,7 +144,9 @@
 
           <button id="generateButton" class="primary-button coral" type="button" disabled>
             <span>Generar audiolibro</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
           </button>
         </article>
       </div>
@@ -157,11 +165,8 @@
             </div>
           </div>
 
-          <textarea
-            id="textEditor"
-            spellcheck="false"
-            placeholder="Aquí aparecerá el texto extraído. Puedes editarlo, borrar portadas, referencias o cualquier fragmento que no quieras escuchar."
-          ></textarea>
+          <textarea id="textEditor" spellcheck="false"
+            placeholder="Aquí aparecerá el texto extraído. Puedes editarlo, borrar portadas, referencias o cualquier fragmento que no quieras escuchar."></textarea>
 
           <div class="editor-footer">
             <span>Consejo: elimina aquí todo lo que no quieras que la voz lea.</span>
@@ -188,7 +193,9 @@
           <div id="audioResult" class="audio-result hidden">
             <audio id="audioPlayer" controls preload="metadata"></audio>
             <a id="downloadLink" class="download-button" download="audiolibro.mp3">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14" />
+              </svg>
               Descargar MP3
             </a>
           </div>
@@ -215,7 +222,9 @@
       </div>
 
       <div id="historyEmpty" class="history-empty">
-        <div class="disc"><div></div></div>
+        <div class="disc">
+          <div></div>
+        </div>
         <div>
           <strong>Aún no has generado ningún audiolibro</strong>
           <span>Cuando generes uno, aparecerá aquí de forma automática.</span>
@@ -226,11 +235,12 @@
     </section>
 
     <footer>
-      <span>Hecho para estudiar sin distracciones.</span>
+      <span>Hecho para estudiar sin distracciones para mi noviecita Dharla.</span>
       <span>El historial se guarda en tu navegador.</span>
     </footer>
   </main>
 
   <script src="/static/app.js"></script>
 </body>
+
 </html>
