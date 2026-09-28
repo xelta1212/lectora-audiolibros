@@ -257,6 +257,7 @@ function setSelectedFile(file) {
   fileName.textContent = file.name;
   fileStats.textContent = `${formatBytes(file.size)} · listo para procesar`;
   fileMeta.classList.remove("hidden");
+  dropZone.classList.add("hidden");  // oculta la zona de drop
   extractButton.disabled = false;
 }
 
@@ -292,6 +293,7 @@ removeFile.addEventListener("click", () => {
   selectedFile = null;
   fileInput.value = "";
   fileMeta.classList.add("hidden");
+  dropZone.classList.remove("hidden");  // muestra la zona de drop de nuevo
   extractButton.disabled = true;
 });
 
