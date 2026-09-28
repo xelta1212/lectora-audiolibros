@@ -170,9 +170,30 @@
       </div>
     </div>
 
+    <!-- ── HISTORIAL ── -->
+    <section class="history-section">
+      <div class="history-header">
+        <div class="history-title-group">
+          <span class="eyebrow">HISTORIAL</span>
+          <h2 class="history-heading">Tus audiolibros</h2>
+        </div>
+        <button id="clearHistory" class="text-button danger" type="button">Limpiar historial</button>
+      </div>
+
+      <div id="historyEmpty" class="history-empty">
+        <div class="disc"><div></div></div>
+        <div>
+          <strong>Aún no has generado ningún audiolibro</strong>
+          <span>Cuando generes uno, aparecerá aquí de forma automática.</span>
+        </div>
+      </div>
+
+      <ul id="historyList" class="history-list hidden" role="list"></ul>
+    </section>
+
     <footer>
       <span>Hecho para estudiar sin distracciones.</span>
-      <span>Los archivos se procesan localmente en tu PC.</span>
+      <span>El historial se guarda en tu navegador.</span>
     </footer>
   </main>
 

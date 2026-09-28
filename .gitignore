@@ -56,3 +56,7 @@ htmlcov/
 
 # Ruff
 .ruff_cache/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
