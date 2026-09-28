@@ -1,0 +1,213 @@
+const $ = (id) => document.getElementById(id);
+
+const dropZone = $("dropZone");
+const fileInput = $("fileInput");
+const fileMeta = $("fileMeta");
+const fileName = $("fileName");
+const fileStats = $("fileStats");
+const removeFile = $("removeFile");
+const cleanPdf = $("cleanPdf");
+const extractButton = $("extractButton");
+const textEditor = $("textEditor");
+const wordCount = $("wordCount");
+const charCount = $("charCount");
+const clearText = $("clearText");
+const voiceSelect = $("voiceSelect");
+const speedRange = $("speedRange");
+const speedValue = $("speedValue");
+const generateButton = $("generateButton");
+const audioEmpty = $("audioEmpty");
+const audioResult = $("audioResult");
+const audioPlayer = $("audioPlayer");
+const downloadLink = $("downloadLink");
+const readyBadge = $("readyBadge");
+const statusBar = $("statusBar");
+const statusTitle = $("statusTitle");
+const statusText = $("statusText");
+
+let selectedFile = null;
+let audioUrl = null;
+
+function formatBytes(bytes) {
+  if (!bytes) return "0 KB";
+  const units = ["B","KB","MB","GB"];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  return `${(bytes / Math.pow(1024, i)).toFixed(i ? 1 : 0)} ${units[i]}`;
+}
+
+function updateCounts() {
+  const text = textEditor.value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  wordCount.textContent = `${words.toLocaleString("es-PE")} palabras`;
+  charCount.textContent = `${text.length.toLocaleString("es-PE")} caracteres`;
+  generateButton.disabled = text.length === 0;
+}
+
+function showStatus(title, text) {
+  statusTitle.textContent = title;
+  statusText.textContent = text;
+  statusBar.classList.remove("hidden");
+}
+
+function hideStatus() {
+  statusBar.classList.add("hidden");
+}
+
+function resetAudio() {
+  if (audioUrl) {
+    URL.revokeObjectURL(audioUrl);
+    audioUrl = null;
+  }
+  audioPlayer.removeAttribute("src");
+  downloadLink.removeAttribute("href");
+  audioResult.classList.add("hidden");
+  audioEmpty.classList.remove("hidden");
+  readyBadge.textContent = "Pendiente";
+  readyBadge.classList.add("muted");
+}
+
+function setSelectedFile(file) {
+  const ext = file.name.toLowerCase().split(".").pop();
+  if (!["pdf", "txt"].includes(ext)) {
+    alert("Solo puedes usar archivos PDF o TXT.");
+    return;
+  }
+  selectedFile = file;
+  fileName.textContent = file.name;
+  fileStats.textContent = `${formatBytes(file.size)} · listo para procesar`;
+  fileMeta.classList.remove("hidden");
+  extractButton.disabled = false;
+}
+
+dropZone.addEventListener("click", () => fileInput.click());
+dropZone.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" || e.key === " ") fileInput.click();
+});
+fileInput.addEventListener("change", () => {
+  if (fileInput.files[0]) setSelectedFile(fileInput.files[0]);
+});
+
+["dragenter","dragover"].forEach(evt => {
+  dropZone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+  });
+});
+["dragleave","drop"].forEach(evt => {
+  dropZone.addEventListener(evt, (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+  });
+});
+dropZone.addEventListener("drop", (e) => {
+  const file = e.dataTransfer.files[0];
+  if (file) setSelectedFile(file);
+});
+
+removeFile.addEventListener("click", () => {
+  selectedFile = null;
+  fileInput.value = "";
+  fileMeta.classList.add("hidden");
+  extractButton.disabled = true;
+});
+
+extractButton.addEventListener("click", async () => {
+  if (!selectedFile) return;
+
+  showStatus("Extrayendo texto", "Leyendo el archivo y preparando una versión editable...");
+  extractButton.disabled = true;
+
+  try {
+    const form = new FormData();
+    form.append("file", selectedFile);
+    form.append("clean_pdf", cleanPdf.checked ? "true" : "false");
+
+    const res = await fetch("/api/extract", { method: "POST", body: form });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.detail || "No se pudo leer el archivo.");
+
+    textEditor.value = data.text;
+    updateCounts();
+    fileStats.textContent = `${formatBytes(selectedFile.size)} · ${data.words.toLocaleString("es-PE")} palabras`;
+    resetAudio();
+
+    document.querySelector(".editor-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    extractButton.disabled = false;
+    hideStatus();
+  }
+});
+
+textEditor.addEventListener("input", () => {
+  updateCounts();
+  resetAudio();
+});
+
+clearText.addEventListener("click", () => {
+  if (!textEditor.value) return;
+  if (confirm("¿Quieres borrar todo el texto del editor?")) {
+    textEditor.value = "";
+    updateCounts();
+    resetAudio();
+  }
+});
+
+speedRange.addEventListener("input", () => {
+  const value = Number(speedRange.value);
+  speedValue.textContent = `${value > 0 ? "+" : value < 0 ? "−" : ""}${Math.abs(value)}%`;
+});
+
+generateButton.addEventListener("click", async () => {
+  const text = textEditor.value.trim();
+  if (!text) return;
+
+  showStatus("Generando audiolibro", "La voz se está creando. No cierres esta pestaña.");
+  generateButton.disabled = true;
+
+  try {
+    const form = new FormData();
+    form.append("text", text);
+    form.append("voice", voiceSelect.value);
+    form.append("rate", speedRange.value);
+
+    const res = await fetch("/api/generate", { method: "POST", body: form });
+
+    if (!res.ok) {
+      let detail = "No se pudo generar el audio.";
+      try {
+        const data = await res.json();
+        detail = data.detail || detail;
+      } catch {}
+      throw new Error(detail);
+    }
+
+    const blob = await res.blob();
+    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    audioUrl = URL.createObjectURL(blob);
+
+    audioPlayer.src = audioUrl;
+    downloadLink.href = audioUrl;
+
+    const baseName = selectedFile
+      ? selectedFile.name.replace(/\.(pdf|txt)$/i, "")
+      : "audiolibro";
+    downloadLink.download = `${baseName}.mp3`;
+
+    audioEmpty.classList.add("hidden");
+    audioResult.classList.remove("hidden");
+    readyBadge.textContent = "Listo";
+    readyBadge.classList.remove("muted");
+
+    document.querySelector("#audioCard").scrollIntoView({ behavior: "smooth", block: "center" });
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    generateButton.disabled = textEditor.value.trim().length === 0;
+    hideStatus();
+  }
+});
+
+updateCounts();

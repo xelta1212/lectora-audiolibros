@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lectora — Creador de Audiolibros</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="shell">
+    <header class="hero">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <div>
+          <p class="eyebrow">LECTORA</p>
+          <h1>Convierte tus lecturas<br><span>en audiolibros.</span></h1>
+        </div>
+      </div>
+      <p class="hero-copy">
+        Sube un PDF o TXT, revisa exactamente lo que se leerá y genera un MP3 con una voz natural.
+      </p>
+    </header>
+
+    <section class="workspace">
+      <div class="left-column">
+        <article class="card upload-card">
+          <div class="card-heading">
+            <div>
+              <p class="step">01</p>
+              <h2>Tu lectura</h2>
+            </div>
+            <span class="soft-badge">PDF · TXT</span>
+          </div>
+
+          <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-label="Seleccionar archivo">
+            <input id="fileInput" type="file" accept=".pdf,.txt" hidden />
+            <div class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 16V4m0 0L7.8 8.2M12 4l4.2 4.2M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3"/>
+              </svg>
+            </div>
+            <strong>Arrastra tu archivo aquí</strong>
+            <span>o haz clic para seleccionarlo</span>
+            <small>Máximo 40 MB</small>
+          </div>
+
+          <div id="fileMeta" class="file-meta hidden">
+            <div class="file-dot"></div>
+            <div class="file-info">
+              <strong id="fileName">archivo.pdf</strong>
+              <span id="fileStats">Listo para procesar</span>
+            </div>
+            <button id="removeFile" class="icon-button" type="button" aria-label="Quitar archivo">×</button>
+          </div>
+
+          <label class="toggle-row">
+            <div>
+              <strong>Limpieza automática del PDF</strong>
+              <span>Quita números de página, encabezados repetidos y une palabras cortadas.</span>
+            </div>
+            <input id="cleanPdf" type="checkbox" checked />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+
+          <button id="extractButton" class="primary-button" type="button" disabled>
+            <span>Extraer texto</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M14 7l5 5-5 5"/></svg>
+          </button>
+        </article>
+
+        <article class="card voice-card">
+          <div class="card-heading">
+            <div>
+              <p class="step">03</p>
+              <h2>Voz y ritmo</h2>
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Voz</span>
+            <select id="voiceSelect">
+              <option value="es-PE-CamilaNeural">Camila · Perú · Femenina</option>
+              <option value="es-PE-AlexNeural">Alex · Perú · Masculina</option>
+              <option value="es-MX-DaliaNeural">Dalia · México · Femenina</option>
+              <option value="es-MX-JorgeNeural">Jorge · México · Masculina</option>
+              <option value="es-ES-ElviraNeural">Elvira · España · Femenina</option>
+              <option value="es-ES-AlvaroNeural">Álvaro · España · Masculina</option>
+            </select>
+          </label>
+
+          <div class="speed-block">
+            <div class="speed-label">
+              <span>Velocidad</span>
+              <strong id="speedValue">−8%</strong>
+            </div>
+            <input id="speedRange" type="range" min="-30" max="20" value="-8" step="1" />
+            <div class="speed-legend"><span>Más lento</span><span>Normal</span><span>Más rápido</span></div>
+          </div>
+
+          <button id="generateButton" class="primary-button coral" type="button" disabled>
+            <span>Generar audiolibro</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </article>
+      </div>
+
+      <div class="right-column">
+        <article class="card editor-card">
+          <div class="card-heading editor-heading">
+            <div>
+              <p class="step">02</p>
+              <h2>Texto que se leerá</h2>
+            </div>
+            <div class="counter">
+              <span id="wordCount">0 palabras</span>
+              <span class="divider"></span>
+              <span id="charCount">0 caracteres</span>
+            </div>
+          </div>
+
+          <textarea
+            id="textEditor"
+            spellcheck="false"
+            placeholder="Aquí aparecerá el texto extraído. Puedes editarlo, borrar portadas, referencias o cualquier fragmento que no quieras escuchar."
+          ></textarea>
+
+          <div class="editor-footer">
+            <span>Consejo: elimina aquí todo lo que no quieras que la voz lea.</span>
+            <button id="clearText" class="text-button" type="button">Limpiar</button>
+          </div>
+        </article>
+
+        <article id="audioCard" class="card audio-card">
+          <div class="card-heading">
+            <div>
+              <p class="step">04</p>
+              <h2>Tu audiolibro</h2>
+            </div>
+            <span id="readyBadge" class="soft-badge muted">Pendiente</span>
+          </div>
+
+          <div id="audioEmpty" class="audio-empty">
+            <div class="disc">
+              <div></div>
+            </div>
+            <p>Cuando generes el audio aparecerá aquí.</p>
+          </div>
+
+          <div id="audioResult" class="audio-result hidden">
+            <audio id="audioPlayer" controls preload="metadata"></audio>
+            <a id="downloadLink" class="download-button" download="audiolibro.mp3">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+              Descargar MP3
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div id="statusBar" class="status-bar hidden" role="status">
+      <div class="spinner"></div>
+      <div>
+        <strong id="statusTitle">Procesando...</strong>
+        <span id="statusText">Esto puede tardar unos momentos.</span>
+      </div>
+    </div>
+
+    <footer>
+      <span>Hecho para estudiar sin distracciones.</span>
+      <span>Los archivos se procesan localmente en tu PC.</span>
+    </footer>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
