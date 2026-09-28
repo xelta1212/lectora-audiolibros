@@ -57,21 +57,11 @@ button,a{ -webkit-tap-highlight-color:transparent }
   margin-bottom:32px;
 }
 .brand{display:flex;gap:18px;align-items:flex-start}
-.brand-mark{
-  width:50px;height:50px;
-  border:1px solid rgba(214,111,101,.2);
-  background:rgba(255,253,249,.84);
-  box-shadow:var(--shadow-soft);
-  border-radius:16px;
-  display:flex;align-items:center;justify-content:center;gap:3px;
-  margin-top:6px;
+.brand-logo{
+  width:58px;height:58px;
+  object-fit:contain;
+  margin-top:2px;
 }
-.brand-mark span{
-  display:block;width:4px;border-radius:9px;background:var(--salmon);
-}
-.brand-mark span:nth-child(1){height:12px}
-.brand-mark span:nth-child(2){height:24px}
-.brand-mark span:nth-child(3){height:17px}
 
 .eyebrow{
   margin:0 0 7px;
@@ -112,6 +102,7 @@ h1 span{color:var(--salmon-deep);font-style:italic}
   padding:24px;
   box-shadow:var(--shadow-soft);
   backdrop-filter:blur(12px);
+  overflow:hidden;
 }
 
 .card-heading{

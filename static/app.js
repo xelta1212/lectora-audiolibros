@@ -321,7 +321,7 @@ extractButton.addEventListener("click", async () => {
     fileStats.textContent = `${formatBytes(selectedFile.size)} · ${data.words.toLocaleString("es-PE")} palabras`;
     resetAudio();
 
-    document.querySelector(".editor-card").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector(".workspace").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
     alert(err.message);
   } finally {
