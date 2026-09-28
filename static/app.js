@@ -13,6 +13,8 @@ const wordCount = $("wordCount");
 const charCount = $("charCount");
 const clearText = $("clearText");
 const voiceSelect = $("voiceSelect");
+const previewVoiceButton = $("previewVoiceButton");
+const previewAudio = $("previewAudio");
 const speedRange = $("speedRange");
 const speedValue = $("speedValue");
 const generateButton = $("generateButton");
@@ -30,6 +32,7 @@ const clearHistory = $("clearHistory");
 
 let selectedFile = null;
 let audioUrl = null;
+let previewUrl = null;
 
 // ──────────────────────────────────────────────
 //  INDEXEDDB — almacenamiento de historial
@@ -68,7 +71,10 @@ async function dbGetAll() {
   return new Promise((resolve, reject) => {
     const tx = db.transaction(STORE, "readonly");
     const req = tx.objectStore(STORE).index("createdAt").getAll();
-    req.onsuccess = (e) => resolve(e.result.reverse()); // más reciente primero
+    req.onsuccess = (e) => {
+      // Orden explícito para que el audio recién generado quede arriba.
+      resolve(e.result.sort((a, b) => Number(b.createdAt) - Number(a.createdAt)));
+    };
     req.onerror = (e) => reject(e.target.error);
   });
 }
@@ -103,6 +109,27 @@ const VOICE_LABELS = {
   "es-MX-JorgeNeural":  "Jorge · MX",
   "es-ES-ElviraNeural": "Elvira · ES",
   "es-ES-AlvaroNeural": "Álvaro · ES",
+  "es-ES-XimenaNeural": "Ximena · ES",
+  "es-AR-ElenaNeural": "Elena · AR",
+  "es-AR-TomasNeural": "Tomás · AR",
+  "es-BO-SofiaNeural": "Sofía · BO",
+  "es-CL-CatalinaNeural": "Catalina · CL",
+  "es-CL-LorenzoNeural": "Lorenzo · CL",
+  "es-CO-GonzaloNeural": "Gonzalo · CO",
+  "es-CO-SalomeNeural": "Salomé · CO",
+  "es-CR-JuanNeural": "Juan · CR",
+  "es-CR-MariaNeural": "María · CR",
+  "es-EC-AndreaNeural": "Andrea · EC",
+  "es-EC-LuisNeural": "Luis · EC",
+  "es-GT-AndresNeural": "Andrés · GT",
+  "es-GT-MartaNeural": "Marta · GT",
+  "es-PA-MargaritaNeural": "Margarita · PA",
+  "es-PA-RobertoNeural": "Roberto · PA",
+  "es-PR-KarinaNeural": "Karina · PR",
+  "es-UY-MateoNeural": "Mateo · UY",
+  "es-UY-ValentinaNeural": "Valentina · UY",
+  "es-VE-PaolaNeural": "Paola · VE",
+  "es-VE-SebastianNeural": "Sebastián · VE",
 };
 
 function formatDate(ts) {
@@ -179,9 +206,10 @@ async function renderHistory() {
 
 async function saveToHistory(title, blob, voice, rate, words) {
   const arrayBuffer = await blob.arrayBuffer();
+  const now = Date.now();
   const record = {
-    id: Date.now().toString(),
-    createdAt: Date.now(),
+    id: globalThis.crypto?.randomUUID?.() || `${now}-${Math.random().toString(36).slice(2)}`,
+    createdAt: now,
     title,
     voice,
     rate: Number(rate),
@@ -196,6 +224,10 @@ async function saveToHistory(title, blob, voice, rate, words) {
     historyList.classList.remove("hidden");
   }
   historyList.prepend(item);
+}
+
+function showHistorySaveWarning() {
+  alert("El audiolibro se generó correctamente, pero no se pudo guardar en el historial. Revisa el espacio disponible del navegador.");
 }
 
 clearHistory.addEventListener("click", async () => {
@@ -349,6 +381,38 @@ speedRange.addEventListener("input", () => {
   speedValue.textContent = `${value > 0 ? "+" : value < 0 ? "−" : ""}${Math.abs(value)}%`;
 });
 
+previewVoiceButton.addEventListener("click", async () => {
+  previewVoiceButton.disabled = true;
+  previewVoiceButton.classList.add("loading");
+  previewVoiceButton.lastChild.textContent = " Generando muestra...";
+
+  try {
+    const selectedName = voiceSelect.selectedOptions[0].textContent.split("·")[0].trim();
+    const form = new FormData();
+    form.append("voice", voiceSelect.value);
+    form.append("name", selectedName);
+
+    const res = await fetch("/api/preview", { method: "POST", body: form });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.detail || "No se pudo generar la vista previa.");
+    }
+
+    const blob = await res.blob();
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(blob);
+    previewAudio.src = previewUrl;
+    previewAudio.classList.add("visible");
+    await previewAudio.play();
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    previewVoiceButton.disabled = false;
+    previewVoiceButton.classList.remove("loading");
+    previewVoiceButton.lastChild.textContent = " Escuchar vista previa";
+  }
+});
+
 // ──────────────────────────────────────────────
 //  EVENTOS — GENERACIÓN DE AUDIO
 // ──────────────────────────────────────────────
@@ -397,7 +461,12 @@ generateButton.addEventListener("click", async () => {
 
     // Guardar en historial (usando el blob original, no la URL revocable)
     const words = text.split(/\s+/).length;
-    await saveToHistory(baseName, blob, voiceSelect.value, speedRange.value, words);
+    try {
+      await saveToHistory(baseName, blob, voiceSelect.value, speedRange.value, words);
+    } catch (historyError) {
+      console.error("No se pudo guardar el audiolibro en el historial", historyError);
+      showHistorySaveWarning();
+    }
 
   } catch (err) {
     alert(err.message);
@@ -411,4 +480,8 @@ generateButton.addEventListener("click", async () => {
 //  INICIO
 // ──────────────────────────────────────────────
 updateCounts();
-renderHistory();
+renderHistory().catch((error) => {
+  console.error("No se pudo cargar el historial", error);
+  historyList.classList.add("hidden");
+  historyEmpty.classList.remove("hidden");
+});

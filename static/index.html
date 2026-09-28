@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lectora — Creador de Audiolibros</title>
+  <link rel="icon" type="image/png" href="/static/favicon-logo.png?v=3" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
@@ -12,18 +13,22 @@
 
   <main class="shell">
     <header class="hero">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">
-          <span></span><span></span><span></span>
+      <div class="hero-content">
+        <div class="brand">
+          <div class="brand-mark-card">
+            <img class="brand-wordmark" src="/static/logo-wordmark.png" alt="Lectora" />
+          </div>
+          <div>
+            <h1>Convierte tus lecturas<br><span>en audiolibros.</span></h1>
+          </div>
         </div>
-        <div>
-          <p class="eyebrow">LECTORA</p>
-          <h1>Convierte tus lecturas<br><span>en audiolibros.</span></h1>
-        </div>
+        <p class="hero-copy">
+          Sube un PDF o TXT, revisa exactamente lo que se leerá y genera un MP3 con una voz natural.
+        </p>
       </div>
-      <p class="hero-copy">
-        Sube un PDF o TXT, revisa exactamente lo que se leerá y genera un MP3 con una voz natural.
-      </p>
+      <div class="hero-visual" aria-hidden="true">
+        <img src="/static/book-hero.png" alt="" />
+      </div>
     </header>
 
     <section class="workspace">
@@ -84,13 +89,42 @@
           <label class="field">
             <span>Voz</span>
             <select id="voiceSelect">
-              <option value="es-PE-CamilaNeural">Camila · Perú · Femenina</option>
-              <option value="es-PE-AlexNeural">Alex · Perú · Masculina</option>
-              <option value="es-MX-DaliaNeural">Dalia · México · Femenina</option>
-              <option value="es-MX-JorgeNeural">Jorge · México · Masculina</option>
-              <option value="es-ES-ElviraNeural">Elvira · España · Femenina</option>
-              <option value="es-ES-AlvaroNeural">Álvaro · España · Masculina</option>
+              <optgroup label="Perú">
+                <option value="es-PE-CamilaNeural">Camila · Femenina</option>
+                <option value="es-PE-AlexNeural">Alex · Masculina</option>
+              </optgroup>
+              <optgroup label="México">
+                <option value="es-MX-DaliaNeural">Dalia · Femenina</option>
+                <option value="es-MX-JorgeNeural">Jorge · Masculina</option>
+              </optgroup>
+              <optgroup label="España">
+                <option value="es-ES-ElviraNeural">Elvira · Femenina</option>
+                <option value="es-ES-AlvaroNeural">Álvaro · Masculina</option>
+                <option value="es-ES-XimenaNeural">Ximena · Femenina</option>
+              </optgroup>
+              <optgroup label="Latinoamérica">
+                <option value="es-AR-ElenaNeural">Elena · Argentina</option>
+                <option value="es-AR-TomasNeural">Tomás · Argentina</option>
+                <option value="es-BO-SofiaNeural">Sofía · Bolivia</option>
+                <option value="es-CL-CatalinaNeural">Catalina · Chile</option>
+                <option value="es-CL-LorenzoNeural">Lorenzo · Chile</option>
+                <option value="es-CO-SalomeNeural">Salomé · Colombia</option>
+                <option value="es-CO-GonzaloNeural">Gonzalo · Colombia</option>
+                <option value="es-EC-AndreaNeural">Andrea · Ecuador</option>
+                <option value="es-EC-LuisNeural">Luis · Ecuador</option>
+                <option value="es-CR-MariaNeural">María · Costa Rica</option>
+                <option value="es-GT-MartaNeural">Marta · Guatemala</option>
+                <option value="es-PA-MargaritaNeural">Margarita · Panamá</option>
+                <option value="es-PR-KarinaNeural">Karina · Puerto Rico</option>
+                <option value="es-UY-ValentinaNeural">Valentina · Uruguay</option>
+                <option value="es-VE-PaolaNeural">Paola · Venezuela</option>
+              </optgroup>
             </select>
+            <button id="previewVoiceButton" class="preview-button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+              Escuchar vista previa
+            </button>
+            <audio id="previewAudio" class="preview-audio" controls preload="none"></audio>
           </label>
 
           <div class="speed-block">

@@ -19,14 +19,14 @@ Convierte cualquier libro en PDF o TXT a un audiolibro MP3 con voces neurales en
 - Sube PDF o TXT (hasta 40 MB).
 - Limpieza automática del PDF (encabezados, pies de página, números de página).
 - Editor del texto antes de generar audio.
-- 6 voces neurales: Perú, México y España.
+- 22 voces neurales en español: Perú, México, España y Latinoamérica.
 - Control de velocidad de narración.
 - **Historial de audiolibros** guardado en tu navegador.
 - Descarga directa en MP3.
 
 ## Importante
 
-- La generación de voz necesita conexión a Internet (usa Microsoft Edge TTS).
+- La generación de voz necesita conexión a Internet (usa Edge-TTS, el proyecto que conecta con las voces de Microsoft Edge).
 - Los PDF escaneados como imágenes no tienen OCR en esta versión.
 
 ## Ejecución local (desarrollo)

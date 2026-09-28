@@ -1,6 +1,6 @@
 :root{
-  --cream:#fbf7ef;
-  --cream-2:#f5ede2;
+  --cream:#f8f0e7;
+  --cream-2:#eee1d5;
   --white:#fffdf9;
   --ink:#3c3230;
   --muted:#8e7f79;
@@ -20,8 +20,8 @@ body{
   min-height:100vh;
   color:var(--ink);
   background:
-    radial-gradient(circle at 15% 0%, rgba(244,194,188,.26), transparent 28rem),
-    linear-gradient(145deg,var(--cream) 0%,#fffaf6 48%,var(--cream-2) 100%);
+    radial-gradient(circle at 14% 0%, rgba(235,167,157,.24), transparent 29rem),
+    linear-gradient(145deg,var(--cream) 0%,#fff8f2 48%,var(--cream-2) 100%);
   font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   overflow-x:hidden;
 }
@@ -44,24 +44,42 @@ button,a{ -webkit-tap-highlight-color:transparent }
 .shell{
   position:relative;
   z-index:1;
-  width:min(1180px,calc(100% - 32px));
+  width:min(1280px,calc(100% - 32px));
   margin:0 auto;
   padding:62px 0 32px;
 }
 
 .hero{
-  display:grid;
-  grid-template-columns:1.2fr .8fr;
-  gap:40px;
-  align-items:end;
-  margin-bottom:32px;
+  position:relative;
+  display:block;
+  min-height:448px;
+  margin-bottom:34px;
+  padding:42px 44px;
+  overflow:hidden;
+  isolation:isolate;
+  border-radius:34px;
+  background-color:#fbf2eb;
+  background-image:url("/static/book-hero.png");
+  background-repeat:no-repeat;
+  background-size:cover;
+  background-position:center 48%;
 }
-.brand{display:flex;gap:18px;align-items:flex-start}
-.brand-logo{
-  width:58px;height:58px;
-  object-fit:contain;
-  margin-top:2px;
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(251,244,237,.98) 0%,rgba(251,244,237,.9) 37%,rgba(251,244,237,.35) 62%,rgba(251,244,237,.08) 100%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;box-shadow:inset 0 0 80px rgba(210,132,118,.09);pointer-events:none}
+.hero-content{width:min(62%,700px);position:relative;z-index:1}
+.brand{display:flex;flex-direction:column;gap:26px;align-items:flex-start}
+.brand-mark-card{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  backdrop-filter:none;
 }
+.brand-wordmark{display:block;width:164px;height:auto;object-fit:contain;object-position:left center;flex:0 0 auto}
 
 .eyebrow{
   margin:0 0 7px;
@@ -73,26 +91,28 @@ button,a{ -webkit-tap-highlight-color:transparent }
 h1{
   margin:0;
   font-family:Georgia,"Times New Roman",serif;
-  font-size:clamp(2.5rem,5vw,4.7rem);
-  line-height:.98;
+  font-size:clamp(2.55rem,4.6vw,4.45rem);
+  line-height:.94;
   letter-spacing:-.045em;
   font-weight:500;
 }
 h1 span{color:var(--salmon-deep);font-style:italic}
 .hero-copy{
-  margin:0 0 7px auto;
-  max-width:440px;
+  margin:24px 0 0;
+  max-width:470px;
   color:var(--muted);
-  line-height:1.7;
+  line-height:1.75;
   font-size:1rem;
 }
+.hero-visual{display:none}
 
 .workspace{
   display:grid;
-  grid-template-columns:minmax(0,.84fr) minmax(0,1.16fr);
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
   gap:20px;
   align-items:start;
 }
+.workspace>*{min-width:0}
 .left-column,.right-column{display:grid;gap:20px}
 
 .card{
@@ -112,7 +132,7 @@ h1 span{color:var(--salmon-deep);font-style:italic}
   gap:16px;
   margin-bottom:18px;
 }
-.card-heading h2{margin:2px 0 0;font-size:1.05rem;letter-spacing:-.015em}
+.card-heading h2{margin:2px 0 0;font-size:1.05rem;letter-spacing:-.015em;line-height:1.2}
 .step{
   margin:0;
   color:var(--salmon-deep);
@@ -249,6 +269,27 @@ select{
   outline:none;
 }
 select:focus{border-color:#df9c92;box-shadow:0 0 0 3px rgba(232,137,125,.12)}
+.preview-button{
+  align-self:flex-start;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid #e7c9c2;
+  border-radius:11px;
+  background:#fff9f6;
+  color:var(--salmon-deep);
+  padding:8px 11px;
+  font-size:.72rem;
+  font-weight:750;
+  cursor:pointer;
+  transition:.2s ease;
+}
+.preview-button:hover:not(:disabled){background:var(--pink-light);border-color:#dfa59b}
+.preview-button:disabled{opacity:.58;cursor:wait}
+.preview-button svg{width:13px;height:13px;fill:currentColor}
+.preview-button.loading svg{animation:spin .8s linear infinite}
+.preview-audio{display:none;width:100%;height:34px;margin-top:2px}
+.preview-audio.visible{display:block}
 
 .speed-block{margin:18px 0}
 .speed-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -494,8 +535,10 @@ footer{
 
 @media (max-width:900px){
   .shell{padding-top:34px}
-  .hero{grid-template-columns:1fr;gap:18px}
-  .hero-copy{margin:0;max-width:650px}
+  .hero{min-height:520px;padding:34px 28px 38px;background-size:auto 100%;background-position:72% center}
+  .hero::before{background:linear-gradient(90deg,rgba(251,244,237,.98) 0%,rgba(251,244,237,.86) 60%,rgba(251,244,237,.2) 100%)}
+  .hero-content{width:100%}
+  .hero-copy{margin:22px 0 0;max-width:650px;padding-top:0}
   .workspace{grid-template-columns:1fr}
   .editor-card{min-height:auto}
   textarea{min-height:360px}
@@ -504,8 +547,10 @@ footer{
 @media (max-width:560px){
   .shell{width:min(100% - 20px,1180px)}
   .card{border-radius:20px;padding:18px}
-  .brand{gap:12px}
-  .brand-mark{width:43px;height:43px;border-radius:14px}
+  .brand{gap:14px}
+  .brand-mark-card{padding:0}
+  .brand-wordmark{width:150px}
+  .hero-visual{margin-top:-8px}
   .counter{display:none}
   footer{flex-direction:column;gap:5px}
   .history-header{align-items:flex-start;flex-direction:column;gap:8px}

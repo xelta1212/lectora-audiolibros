@@ -7,6 +7,7 @@ import tempfile
 import threading
 import webbrowser
 from pathlib import Path
+from re import sub
 from typing import Literal
 
 import edge_tts
@@ -22,13 +23,32 @@ STATIC_DIR = BASE_DIR / "static"
 app = FastAPI(title="Lectora — Creador de Audiolibros")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
+# Voces en español disponibles en Edge-TTS. Se mantienen en una lista
+# explícita para validar la entrada del navegador y evitar aceptar nombres
+# de voz arbitrarios desde una petición externa.
 VOICES = {
-    "es-PE-CamilaNeural",
-    "es-PE-AlexNeural",
-    "es-MX-DaliaNeural",
-    "es-MX-JorgeNeural",
-    "es-ES-ElviraNeural",
-    "es-ES-AlvaroNeural",
+    "es-AR-ElenaNeural", "es-AR-TomasNeural",
+    "es-BO-MarceloNeural", "es-BO-SofiaNeural",
+    "es-CL-CatalinaNeural", "es-CL-LorenzoNeural",
+    "es-CO-GonzaloNeural", "es-CO-SalomeNeural",
+    "es-CR-JuanNeural", "es-CR-MariaNeural",
+    "es-CU-BelkysNeural", "es-CU-ManuelNeural",
+    "es-DO-EmilioNeural", "es-DO-RamonaNeural",
+    "es-EC-AndreaNeural", "es-EC-LuisNeural",
+    "es-ES-AlvaroNeural", "es-ES-ElviraNeural", "es-ES-XimenaNeural",
+    "es-GQ-JavierNeural", "es-GQ-TeresaNeural",
+    "es-GT-AndresNeural", "es-GT-MartaNeural",
+    "es-HN-CarlosNeural", "es-HN-KarlaNeural",
+    "es-MX-DaliaNeural", "es-MX-JorgeNeural",
+    "es-NI-FedericoNeural", "es-NI-YolandaNeural",
+    "es-PA-MargaritaNeural", "es-PA-RobertoNeural",
+    "es-PE-AlexNeural", "es-PE-CamilaNeural",
+    "es-PR-KarinaNeural", "es-PR-VictorNeural",
+    "es-PY-MarioNeural", "es-PY-TaniaNeural",
+    "es-SV-LorenaNeural", "es-SV-RodrigoNeural",
+    "es-UY-MateoNeural", "es-UY-ValentinaNeural",
+    "es-VE-PaolaNeural", "es-VE-SebastianNeural",
+    "es-US-AlonsoNeural", "es-US-PalomaNeural",
 }
 
 def _decode_txt(data: bytes) -> str:
@@ -205,6 +225,34 @@ async def generate_audio(
         filename="audiolibro.mp3",
         background=None,
     )
+
+@app.post("/api/preview")
+async def preview_voice(
+    voice: str = Form("es-PE-CamilaNeural"),
+    name: str = Form("tu voz"),
+):
+    """Genera una muestra breve sin guardarla en el historial."""
+    if voice not in VOICES:
+        raise HTTPException(status_code=400, detail="Voz no válida.")
+
+    # El nombre solo se usa como texto de muestra y se limita para evitar
+    # introducir contenido inesperado en la petición al servicio de voz.
+    safe_name = sub(r"[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]", "", name).strip()[:40]
+    safe_name = safe_name or "tu voz"
+    text = f"Hola, soy {safe_name}. Yo estoy en Lectora."
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+    tmp_path = Path(tmp.name)
+    tmp.close()
+
+    try:
+        communicate = edge_tts.Communicate(text=text, voice=voice, rate="+0%")
+        await communicate.save(str(tmp_path))
+    except Exception as exc:
+        tmp_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=500, detail=f"No se pudo generar la vista previa: {exc}")
+
+    return FileResponse(tmp_path, media_type="audio/mpeg", filename="preview-voz.mp3")
 
 
 # ──────────────────────────────────────────────
